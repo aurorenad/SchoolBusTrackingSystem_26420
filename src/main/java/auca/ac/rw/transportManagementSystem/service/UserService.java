@@ -53,26 +53,7 @@ public class UserService {
     }
 
     public String saveUserWithLocation(User user, String locationCode) {
-        if (user == null) {
-            return "User cannot be null";
-        }
-
-        if (user.getFullNames() == null || user.getFullNames().trim().isEmpty()) {
-            return "Full names are required";
-        }
-
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-            return "Email is required";
-        }
-
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            return "Password is required";
-        }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return "User with this email already exists";
-        }
-
+       
         if (locationCode != null && !locationCode.trim().isEmpty()) {
             Optional<Location> locationOptional = locationRepository.findByCode(locationCode);
             if (!locationOptional.isPresent()) {
@@ -190,7 +171,7 @@ public class UserService {
         }
     }
 
-    public String deleteUser(UUID id) {
+     public String deleteUser(UUID id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (!userOptional.isPresent()) {
             return "User not found";

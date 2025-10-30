@@ -15,7 +15,6 @@ import auca.ac.rw.transportManagementSystem.service.BusService;
 
 @RestController
 @RequestMapping("/api/buses")
-@CrossOrigin(origins = "*")
 public class BusController {
 
     @Autowired
@@ -41,7 +40,7 @@ public class BusController {
         }
     }
 
-    @PutMapping("/assignRoute")
+     @PutMapping("/assignRoute")
     public ResponseEntity<String> assignRoute(@RequestParam int busId, @RequestParam int routeId) {
         String response = busService.assignRoute(busId, routeId);
         if (response.equals("Route assigned successfully")) {
@@ -135,7 +134,7 @@ public class BusController {
         }
     }
 
-    @DeleteMapping("/delete")
+     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteBus(@RequestParam int id) {
         String response = busService.deleteBus(id);
         if (response.equals("Bus deleted successfully")) {
@@ -143,11 +142,5 @@ public class BusController {
         } else {
             return ResponseEntity.badRequest().body(response);
         }
-    }
-
-    @GetMapping("/exists")
-    public ResponseEntity<Boolean> checkExists(@RequestParam String plateNumber) {
-        boolean exists = busService.existsByPlateNumber(plateNumber);
-        return ResponseEntity.ok(exists);
     }
 }

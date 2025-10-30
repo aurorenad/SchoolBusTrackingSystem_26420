@@ -47,44 +47,7 @@ public class StudentService {
             return "Failed to save student: " + e.getMessage();
         }
     }
-
-    public String saveStudentWithParentAndBus(Student student, UUID parentId, Integer busId) {
-        if (student == null) {
-            return "Student cannot be null";
-        }
-
-        if (student.getName() == null || student.getName().trim().isEmpty()) {
-            return "Student name is required";
-        }
-
-        if (student.getClassName() == null || student.getClassName().trim().isEmpty()) {
-            return "Class name is required";
-        }
-
-        if (parentId != null) {
-            Optional<User> parentOptional = userRepository.findById(parentId);
-            if (!parentOptional.isPresent()) {
-                return "Parent not found";
-            }
-            student.setParent(parentOptional.get());
-        }
-
-        if (busId != null) {
-            Optional<Bus> busOptional = busRepository.findById(busId);
-            if (!busOptional.isPresent()) {
-                return "Bus not found";
-            }
-            student.setBus(busOptional.get());
-        }
-
-        try {
-            studentRepository.save(student);
-            return "Student saved successfully";
-        } catch (Exception e) {
-            return "Failed to save student: " + e.getMessage();
-        }
-    }
-
+    
     public String assignParent(int studentId, UUID parentId) {
         if (parentId == null) {
             return "Parent ID is required";

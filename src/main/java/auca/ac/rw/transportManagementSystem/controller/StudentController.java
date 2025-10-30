@@ -32,19 +32,6 @@ public class StudentController {
         }
     }
 
-    @PostMapping(value = "/saveWithParentAndBus", consumes = MediaType.APPLICATION_JSON_VALUE, 
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveStudentWithParentAndBus(@RequestBody Student student,
-                                                               @RequestParam(required = false) UUID parentId,
-                                                               @RequestParam(required = false) Integer busId) {
-        String response = studentService.saveStudentWithParentAndBus(student, parentId, busId);
-        if (response.equals("Student saved successfully")) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @PutMapping("/assignParent")
     public ResponseEntity<String> assignParent(@RequestParam int studentId, 
                                                 @RequestParam UUID parentId) {
@@ -68,8 +55,7 @@ public class StudentController {
     }
 
     @PutMapping("/updateStatus")
-    public ResponseEntity<String> updateStudentStatus(@RequestParam int studentId, 
-                                                       @RequestParam StudentStatus status) {
+    public ResponseEntity<String> updateStudentStatus(@RequestParam int studentId, @RequestParam StudentStatus status) {
         String response = studentService.updateStudentStatus(studentId, status);
         if (response.equals("Student status updated successfully")) {
             return ResponseEntity.ok(response);

@@ -106,9 +106,11 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateUser(@PathVariable UUID id, @RequestBody User user) {
-        String response = userService.updateUser(id, user);
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUser(@RequestParam String id, 
+                                          @RequestBody User user) {
+        UUID userId = UUID.fromString(id);
+        String response = userService.updateUser(userId, user);  
         if (response.equals("User updated successfully")) {
             return ResponseEntity.ok(response);
         } else {
@@ -116,9 +118,10 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        String response = userService.deleteUser(id);
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestParam String id) {
+        UUID userId = UUID.fromString(id);
+        String response = userService.deleteUser(userId);  
         if (response.equals("User deleted successfully")) {
             return ResponseEntity.ok(response);
         } else {
