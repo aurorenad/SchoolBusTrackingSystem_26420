@@ -22,12 +22,12 @@ This system enables schools to track buses in real-time, monitor student pickups
 * **Hibernate/JPA** (ORM)
 * **Maven** (Dependency Management)
 
-## 📌 Features
+## Features
 
 ✅ Driver & Bus Management
 ✅ Student and parent Registration
 
-## 🧩 System Modules
+## System Modules
 
 | Module              | Description                                     |
 | ------------------- | ----------------------------------------------- |
@@ -47,7 +47,7 @@ Main Entities include:
 * Student
 * Route
 * Location
-
+### ERD
 <img width="1122" height="961" alt="WebTech drawio" src="https://github.com/user-attachments/assets/665426fa-a9da-4bee-ae55-99ff7670bcb7" />
 
 ## Roles & Permissions
@@ -57,5 +57,4 @@ Main Entities include:
 | Admin  | Manage users, buses, routes, students |
 | Driver | Manage assigned bus                   |
 
-ade with ❤️ by **Aurore Nadine**
 
