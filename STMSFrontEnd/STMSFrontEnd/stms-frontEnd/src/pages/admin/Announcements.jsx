@@ -41,6 +41,16 @@ const Announcements = () => {
     useEffect(() => {
         fetchAnnouncements();
         fetchRecipients();
+        
+        // Check if we came from global search
+        const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
+        const globalSearchType = sessionStorage.getItem('globalSearchType');
+        if (globalSearchQuery && globalSearchType === 'announcements') {
+            setSearchTerm(globalSearchQuery);
+            // Clear the session storage
+            sessionStorage.removeItem('globalSearchQuery');
+            sessionStorage.removeItem('globalSearchType');
+        }
     }, []);
 
     const fetchRecipients = async () => {

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, X, GraduationCap, Bus, User, Route, Megaphone } from 'lucide-react';
 import { globalSearchService } from '../services/globalSearchService';
 import toast from 'react-hot-toast';
 
 const GlobalSearch = ({ onClose }) => {
+    const navigate = useNavigate();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -44,6 +46,47 @@ const GlobalSearch = ({ onClose }) => {
         }
     };
 
+    const handleItemClick = (item, type) => {
+        // Determine the route based on entity type
+        let route = '';
+        switch (type) {
+            case 'students':
+                route = '/admin/students';
+                break;
+            case 'buses':
+                route = '/admin/buses';
+                break;
+            case 'drivers':
+                route = '/admin/drivers';
+                break;
+            case 'routes':
+                route = '/admin/routes';
+                break;
+            case 'announcements':
+                route = '/admin/announcements';
+                break;
+            default:
+                return;
+        }
+
+        // Close the search modal
+        onClose();
+        
+        // Navigate to the appropriate page
+        navigate(route);
+        
+        // Store the search query in sessionStorage so the target page can highlight/filter results
+        if (query.trim()) {
+            sessionStorage.setItem('globalSearchQuery', query.trim());
+            sessionStorage.setItem('globalSearchType', type);
+            // Clear after a short delay to avoid persistence issues
+            setTimeout(() => {
+                sessionStorage.removeItem('globalSearchQuery');
+                sessionStorage.removeItem('globalSearchType');
+            }, 5000);
+        }
+    };
+
     const renderResults = (items, type, label) => {
         if (!items || items.content?.length === 0) return null;
 
@@ -57,17 +100,17 @@ const GlobalSearch = ({ onClose }) => {
                     {items.content.slice(0, 3).map((item, idx) => (
                         <div
                             key={idx}
-                            className="p-2 bg-gray-50 rounded-md hover:bg-gray-100 cursor-pointer text-sm"
-                            onClick={() => {
-                                // Navigate to detail page based on type
-                                onClose();
-                            }}
+                            className="p-2 bg-gray-50 rounded-md hover:bg-gray-100 cursor-pointer text-sm transition-colors"
+                            onClick={() => handleItemClick(item, type)}
                         >
                             {item.name || item.plateNumber || item.routeName || item.title || 'N/A'}
                         </div>
                     ))}
                     {items.totalElements > 3 && (
-                        <div className="text-xs text-gray-500 p-2">
+                        <div 
+                            className="text-xs text-gray-500 p-2 hover:text-gray-700 cursor-pointer"
+                            onClick={() => handleItemClick(null, type)}
+                        >
                             +{items.totalElements - 3} more...
                         </div>
                     )}

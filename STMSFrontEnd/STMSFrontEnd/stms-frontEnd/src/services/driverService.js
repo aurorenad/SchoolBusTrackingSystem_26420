@@ -5,13 +5,13 @@ const API_BASE_URL = 'http://localhost:8081/api';
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
     if (!token) {
-        console.warn('No token found in localStorage');
-        return {
-            'Content-Type': 'application/json'
-        };
+        throw new Error('No authentication token found. Please login first.');
     }
     // Clean token - remove quotes if present
-    const cleanToken = token.replace(/^"|"$/g, '');
+    const cleanToken = token.replace(/^"|"$/g, '').trim();
+    if (!cleanToken) {
+        throw new Error('Invalid authentication token. Please login again.');
+    }
     return {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${cleanToken}`
@@ -21,10 +21,23 @@ const getAuthHeaders = () => {
 export const driverService = {
     // Get all drivers
     getAll: async () => {
-        const response = await axios.get(`${API_BASE_URL}/drivers/all`, {
-            headers: getAuthHeaders()
-        });
-        return response.data;
+        try {
+            const response = await axios.get(`${API_BASE_URL}/drivers/all`, {
+                headers: getAuthHeaders()
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                // Clear invalid token and redirect to login
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
+                throw new Error('Session expired. Please login again.');
+            }
+            throw error;
+        }
     },
 
     // Get driver by ID

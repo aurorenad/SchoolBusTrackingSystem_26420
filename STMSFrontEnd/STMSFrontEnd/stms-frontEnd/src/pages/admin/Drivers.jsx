@@ -22,13 +22,33 @@ const Drivers = () => {
 
     useEffect(() => {
         fetchDrivers();
+        
+        // Check if we came from global search
+        const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
+        const globalSearchType = sessionStorage.getItem('globalSearchType');
+        if (globalSearchQuery && globalSearchType === 'drivers') {
+            setSearchTerm(globalSearchQuery);
+            // Clear the session storage
+            sessionStorage.removeItem('globalSearchQuery');
+            sessionStorage.removeItem('globalSearchType');
+        }
     }, []);
 
     const fetchDrivers = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token || !token.trim()) {
+                setLoading(false);
+                return;
+            }
             const data = await driverService.getAll();
             setDrivers(data || []);
         } catch (error) {
+            if (error.message?.includes('authentication') || error.message?.includes('Session expired')) {
+                // Don't show error toast, redirect will happen
+                setLoading(false);
+                return;
+            }
             console.error('Error fetching drivers:', error);
             const data = error?.response?.data;
             const message =

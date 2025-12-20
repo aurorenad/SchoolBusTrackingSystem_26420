@@ -79,6 +79,19 @@ const Students = () => {
         fetchProvinces();
     }, [currentPage, pageSize]);
 
+    // Check if we came from global search (only on initial mount)
+    useEffect(() => {
+        const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
+        const globalSearchType = sessionStorage.getItem('globalSearchType');
+        if (globalSearchQuery && globalSearchType === 'students') {
+            setSearchTerm(globalSearchQuery);
+            // Clear the session storage
+            sessionStorage.removeItem('globalSearchQuery');
+            sessionStorage.removeItem('globalSearchType');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         // Reset to first page when search term or location filter changes
         setCurrentPage(0);
@@ -152,6 +165,11 @@ const Students = () => {
 
     const fetchStudents = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token || !token.trim()) {
+                setLoading(false);
+                return;
+            }
             setLoading(true);
             let data;
             
@@ -168,6 +186,11 @@ const Students = () => {
             setTotalPages(data?.totalPages || 0);
             setTotalElements(data?.totalElements || 0);
         } catch (error) {
+            if (error.message?.includes('authentication') || error.message?.includes('Session expired')) {
+                // Don't show error toast, redirect will happen
+                setLoading(false);
+                return;
+            }
             toast.error('Failed to fetch students');
         } finally {
             setLoading(false);

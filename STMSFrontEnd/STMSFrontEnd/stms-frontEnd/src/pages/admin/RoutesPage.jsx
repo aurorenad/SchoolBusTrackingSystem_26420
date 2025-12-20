@@ -34,13 +34,33 @@ const RoutesPage = () => {
 
     useEffect(() => {
         fetchRoutes();
+        
+        // Check if we came from global search
+        const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
+        const globalSearchType = sessionStorage.getItem('globalSearchType');
+        if (globalSearchQuery && globalSearchType === 'routes') {
+            setSearchTerm(globalSearchQuery);
+            // Clear the session storage
+            sessionStorage.removeItem('globalSearchQuery');
+            sessionStorage.removeItem('globalSearchType');
+        }
     }, []);
 
     const fetchRoutes = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token || !token.trim()) {
+                setLoading(false);
+                return;
+            }
             const data = await routeService.getAll();
             setRoutes(data || []);
         } catch (error) {
+            if (error.message?.includes('authentication') || error.message?.includes('Session expired')) {
+                // Don't show error toast, redirect will happen
+                setLoading(false);
+                return;
+            }
             toast.error('Failed to fetch routes');
         } finally {
             setLoading(false);

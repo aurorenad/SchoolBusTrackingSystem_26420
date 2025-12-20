@@ -26,13 +26,32 @@ const Buses = () => {
     useEffect(() => {
         fetchBuses();
         fetchDrivers();
+        
+        // Check if we came from global search
+        const globalSearchQuery = sessionStorage.getItem('globalSearchQuery');
+        const globalSearchType = sessionStorage.getItem('globalSearchType');
+        if (globalSearchQuery && globalSearchType === 'buses') {
+            setSearchTerm(globalSearchQuery);
+            // Clear the session storage
+            sessionStorage.removeItem('globalSearchQuery');
+            sessionStorage.removeItem('globalSearchType');
+        }
     }, []);
 
     const fetchBuses = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token || !token.trim()) {
+                setLoading(false);
+                return;
+            }
             const data = await busService.getAll();
             setBuses(data || []);
         } catch (error) {
+            if (error.message?.includes('authentication') || error.message?.includes('Session expired')) {
+                // Don't show error toast, redirect will happen
+                return;
+            }
             toast.error('Failed to fetch buses');
         } finally {
             setLoading(false);
@@ -41,10 +60,17 @@ const Buses = () => {
 
     const fetchDrivers = async () => {
         try {
+            const token = localStorage.getItem('token');
+            if (!token || !token.trim()) {
+                return;
+            }
             const data = await driverService.getAll();
             setDrivers(data || []);
         } catch (error) {
-            // Drivers page might not be used, so keep this quiet
+            if (error.message?.includes('authentication') || error.message?.includes('Session expired')) {
+                // Don't show error, redirect will happen
+                return;
+            }
             console.error('Failed to fetch drivers');
         }
     };

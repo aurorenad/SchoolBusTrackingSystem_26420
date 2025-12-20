@@ -18,22 +18,41 @@ const DashboardHome = () => {
         const fetchStats = async () => {
             try {
                 const token = localStorage.getItem('token');
-                if (!token) {
-                    console.warn('No token found');
+                if (!token || !token.trim()) {
+                    console.warn('No token found - user not authenticated');
                     setLoading(false);
                     return;
                 }
-                const cleanToken = token.replace(/^"|"$/g, '');
-                const headers = {
-                    'Authorization': `Bearer ${cleanToken}`,
-                    'Content-Type': 'application/json'
-                };
 
                 const [studentsData, busesData, driversData, routesData] = await Promise.all([
-                    studentService.getAll().catch(() => []),
-                    busService.getAll().catch(() => []),
-                    driverService.getAll().catch(() => []),
-                    routeService.getAll().catch(() => [])
+                    studentService.getAll().catch((err) => {
+                        if (err.message?.includes('authentication') || err.message?.includes('Session expired')) {
+                            return [];
+                        }
+                        console.error('Failed to fetch students:', err);
+                        return [];
+                    }),
+                    busService.getAll().catch((err) => {
+                        if (err.message?.includes('authentication') || err.message?.includes('Session expired')) {
+                            return [];
+                        }
+                        console.error('Failed to fetch buses:', err);
+                        return [];
+                    }),
+                    driverService.getAll().catch((err) => {
+                        if (err.message?.includes('authentication') || err.message?.includes('Session expired')) {
+                            return [];
+                        }
+                        console.error('Failed to fetch drivers:', err);
+                        return [];
+                    }),
+                    routeService.getAll().catch((err) => {
+                        if (err.message?.includes('authentication') || err.message?.includes('Session expired')) {
+                            return [];
+                        }
+                        console.error('Failed to fetch routes:', err);
+                        return [];
+                    })
                 ]);
 
                 setStats({
