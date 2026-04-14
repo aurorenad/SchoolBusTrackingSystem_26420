@@ -18,6 +18,8 @@ import Locations from './pages/admin/Locations';
 import DriverDashboard from './pages/driver/DriverDashboard';
 import StudentDashboard from './pages/student/StudentDashboard';
 
+import LandingPage from './pages/LandingPage';
+
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, token } = useAuth();
 
@@ -34,6 +36,7 @@ function App() {
       <AuthProvider>
         <Toaster position="top-right" />
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/set-password" element={<SetPassword />} />
@@ -75,7 +78,7 @@ function App() {
             }
           />
 
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AuthProvider>
     </Router>
